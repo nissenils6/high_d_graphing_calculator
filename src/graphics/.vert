@@ -26,6 +26,9 @@ void main()
         projected_pos.y *= u_resolution.x / u_resolution.y;
     }
 
+    // projected_pos.x /= 4.0 * projected_pos.z;
+    // projected_pos.y /= 4.0 * projected_pos.z;
+
     gl_Position = vec4(projected_pos, 1.0);
 
     float lighting = (1 - dot(a_normal, u_lighting)) * 0.5;

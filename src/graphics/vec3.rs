@@ -98,3 +98,15 @@ impl std::ops::Div<f32> for Vec3 {
         }
     }
 }
+
+impl std::ops::Neg for Vec3 {
+    type Output = Self;
+
+    fn neg(self) -> Self::Output {
+        Vec3 {
+            x: -self.x,
+            y: -self.y,
+            z: -self.z,
+        }
+    }
+}
