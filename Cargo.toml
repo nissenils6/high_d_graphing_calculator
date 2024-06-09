@@ -1,0 +1,9 @@
+[package]
+name = "high_d_graphing_calculator"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+gl = "*"
+sdl2 = "*"
+enum-ordinalize = "*"
