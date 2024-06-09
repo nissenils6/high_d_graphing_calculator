@@ -1,23 +1,34 @@
 #version 330 core
 
-layout (location = 0) in vec2 a_position;
+// VertexBuffer: [(position: vec3, color: vec3, normal: vec3), ...]
+// IndexBuffer: [i32, i32, i32, ...]
+// Uniforms: Resolution: vec2, Camera Position: vec3, Camera Orientation: mat3, Lighting: vec3
+
+layout (location = 0) in vec3 a_position;
 layout (location = 1) in vec3 a_color;
+layout (location = 2) in vec3 a_normal;
 
 uniform vec2 u_resolution;
-uniform vec2 u_camera_position;
-uniform float u_camera_scale;
+uniform vec3 u_camera_position;
+uniform mat3 u_camera_orientation;
+uniform vec3 u_lighting;
 
 out vec3 f_color;
 
 void main()
 {
-    vec2 position = (a_position - u_camera_position) / u_camera_scale;
+    vec3 rel_to_camera_pos = a_position - u_camera_position;
+    vec3 projected_pos = u_camera_orientation * rel_to_camera_pos;
+
     if (u_resolution.x > u_resolution.y) {
-        position.x *= u_resolution.y / u_resolution.x;
+        projected_pos.x *= u_resolution.y / u_resolution.x;
     } else {
-        position.y *= u_resolution.x / u_resolution.y;
+        projected_pos.y *= u_resolution.x / u_resolution.y;
     }
 
-    gl_Position = vec4(position, 0.0, 1.0);
-    f_color = a_color;
+    gl_Position = vec4(projected_pos, 1.0);
+
+    float lighting = (1 - dot(a_normal, u_lighting)) * 0.5;
+
+    f_color = a_color * lighting;
 }

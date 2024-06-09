@@ -2,9 +2,10 @@ pub mod graphics;
 
 use std::{f64::consts::PI, ffi::CString};
 
-use graphics::{winsdl::*, objects::*};
+use graphics::{objects::*, winsdl::*};
 use sdl2::event::Event;
 
+#[derive(Clone, Copy)]
 struct Complex {
     // z = a + bi
     a: f64,
@@ -37,12 +38,18 @@ impl Complex {
             b: -self.b,
         }
     }
+
+    fn pow(self, v: f64) -> Complex {
+        let ang: f64 = self.arg() * v;
+        let rad: f64 = self.abs().powf(v);
+        Complex::from_polar(rad, ang)
+    }
 }
 
 impl std::ops::Add for Complex {
-    type Output = Complex;
+    type Output = Self;
 
-    fn add(self, rhs: Complex) -> Complex {
+    fn add(self, rhs: Self) -> Self {
         Complex {
             a: self.a + rhs.a,
             b: self.b + rhs.b,
@@ -51,9 +58,9 @@ impl std::ops::Add for Complex {
 }
 
 impl std::ops::Sub for Complex {
-    type Output = Complex;
+    type Output = Self;
 
-    fn sub(self, rhs: Complex) -> Complex {
+    fn sub(self, rhs: Self) -> Self {
         Complex {
             a: self.a - rhs.a,
             b: self.b - rhs.b,
@@ -62,9 +69,9 @@ impl std::ops::Sub for Complex {
 }
 
 impl std::ops::Mul for Complex {
-    type Output = Complex;
+    type Output = Self;
 
-    fn mul(self, rhs: Complex) -> Complex {
+    fn mul(self, rhs: Self) -> Self {
         Complex {
             a: (self.a * rhs.a) - (self.b * rhs.b),
             b: (self.a * rhs.b) + (self.b * rhs.a),
@@ -73,9 +80,9 @@ impl std::ops::Mul for Complex {
 }
 
 impl std::ops::Div for Complex {
-    type Output = Complex;
+    type Output = Self;
 
-    fn div(self, rhs: Complex) -> Complex {
+    fn div(self, rhs: Self) -> Self {
         let den: f64 = (rhs.a * rhs.a) + (rhs.b * rhs.b);
         Complex {
             a: ((self.a * rhs.a) + (self.b * rhs.b)) / (den),
@@ -90,42 +97,52 @@ impl std::fmt::Display for Complex {
     }
 }
 
-// TEST
-
 fn main() -> Result<(), String> {
     let mut sdl = Winsdl::new(800, 600, "My window")?;
 
-    let vert_shader = Shader::from_source(&CString::new(include_str!("graphics/.vert")).unwrap(), gl::VERTEX_SHADER)?;
-    let frag_shader = Shader::from_source(&CString::new(include_str!("graphics/.frag")).unwrap(), gl::FRAGMENT_SHADER)?;
-    
+    let vert_shader = Shader::from_source(
+        &CString::new(include_str!("graphics/.vert")).unwrap(),
+        gl::VERTEX_SHADER,
+    )?;
+    let frag_shader = Shader::from_source(
+        &CString::new(include_str!("graphics/.frag")).unwrap(),
+        gl::FRAGMENT_SHADER,
+    )?;
+
     let program = Program::from_shaders(&[&vert_shader, &frag_shader])?;
     program.set();
-    
+
     let vbo = Vbo::new();
     vbo.bind();
     let vao = Vao::new(&[
-        VertexArrayElement::Floats { count: 2, normalized: false },
-        VertexArrayElement::Floats { count: 3, normalized: false },
+        VertexArrayElement::Floats {
+            count: 3,
+            normalized: false,
+        },
+        VertexArrayElement::Floats {
+            count: 3,
+            normalized: false,
+        },
+        VertexArrayElement::Floats {
+            count: 3,
+            normalized: false,
+        },
     ]);
     vao.bind();
     let ibo = Ibo::new();
     ibo.bind();
 
     let vertices = vec![
-        -0.5, -0.5, 1.0, 0.0, 0.0,
-        -0.5,  0.5, 0.0, 1.0, 0.0,
-         0.5,  0.5, 0.0, 0.0, 1.0,
-         0.5, -0.5, 1.0, 1.0, 1.0,
+        -0.5, -0.5, 1.0, 0.0, 0.0, -0.5, 0.5, 0.0, 1.0, 0.0, 0.5, 0.5, 0.0, 0.0, 1.0, 0.5, -0.5,
+        1.0, 1.0, 1.0,
     ];
 
-    let indices = vec![
-        0, 1, 2, 
-        2, 3, 0,
-    ];
+    let indices = vec![0, 1, 2, 2, 3, 0];
 
     let u_resolution = Uniform::new(&program, "u_resolution")?;
     let u_camera_position = Uniform::new(&program, "u_camera_position")?;
-    let u_camera_scale = Uniform::new(&program, "u_camera_scale")?;
+    let u_camera_orientation = Uniform::new(&program, "u_camera_orientation")?;
+    let u_lighting = Uniform::new(&program, "u_lighting")?;
 
     'running: loop {
         for event in sdl.event_pump.poll_iter() {
@@ -143,20 +160,14 @@ fn main() -> Result<(), String> {
 
         u_resolution.set2(800.0, 600.0);
         u_camera_position.set2(0.0, 0.0);
-        u_camera_scale.set1(1.0);
+        // u_camera_scale.set1(1.0);
 
         unsafe {
             gl::ClearColor(0.1, 0.1, 0.1, 1.0);
             gl::Clear(gl::COLOR_BUFFER_BIT);
 
-            gl::DrawElements(
-                gl::TRIANGLES,
-                6,
-                gl::UNSIGNED_INT,
-                0 as *const _,
-            );
+            gl::DrawElements(gl::TRIANGLES, 6, gl::UNSIGNED_INT, 0 as *const _);
         }
-
 
         sdl.window.gl_swap_window();
     }

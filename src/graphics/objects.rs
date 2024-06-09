@@ -1,6 +1,8 @@
 use std::{ffi::{CStr, CString}, ptr::{null, null_mut}};
 
-use gl::types::{GLboolean, GLchar, GLenum, GLint, GLuint};
+use gl::types::{self, GLboolean, GLchar, GLenum, GLint, GLuint};
+
+use super::{color::Color, mat3::Mat3, vec3::Vec3};
 
 fn create_cstring(len: usize, character: u8) -> CString {
     let mut buffer = Vec::<u8>::with_capacity(len + 1);
@@ -361,6 +363,20 @@ impl Uniform {
     pub fn set4(&self, f1: f32, f2: f32, f3: f32, f4: f32) {
         unsafe {
             gl::Uniform4f(self.id, f1, f2, f3, f4);
+        }
+    }
+
+    pub fn set_vec3(&self, vec: Vec3) {
+        self.set3(vec.x, vec.y, vec.z);
+    }
+
+    pub fn set_rgb(&self, color: Color) {
+        self.set3(color.r, color.g, color.b);
+    }
+
+    pub fn set_mat3(&self, mat: Mat3) {
+        unsafe {
+            gl::UniformMatrix3fv(self.id, 1, 0, &mat as *const Mat3 as *const types::GLfloat);
         }
     }
 
