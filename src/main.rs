@@ -90,6 +90,8 @@ impl std::fmt::Display for Complex {
     }
 }
 
+// TEST
+
 fn main() -> Result<(), String> {
     let mut sdl = Winsdl::new(800, 600, "My window")?;
 
