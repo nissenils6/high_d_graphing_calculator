@@ -2,7 +2,7 @@ use std::{ffi::{CStr, CString}, ptr::{null, null_mut}};
 
 use gl::types::{self, GLboolean, GLchar, GLenum, GLint, GLuint};
 
-use super::{color::Color, mat3::Mat3, vec3::Vec3};
+use super::color::Color;
 
 fn create_cstring(len: usize, character: u8) -> CString {
     let mut buffer = Vec::<u8>::with_capacity(len + 1);

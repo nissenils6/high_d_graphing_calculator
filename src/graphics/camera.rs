@@ -22,7 +22,7 @@ impl Camera {
             screen_size: glm::Vec2::new(800.0, 600.0),
             fov: PI / 2.0,
             near_clip: 0.2,
-            far_clip: 25.0,
+            far_clip: 100.0,
         }
     }
 

@@ -1,4 +1,4 @@
-use crate::graphics::{vec3::*, color::*, mat3::*};
+use crate::graphics::{color::*};
 
 pub struct Graphics {
     pub vertex_buffer: Vec<f32>,
@@ -19,7 +19,7 @@ impl Graphics {
         }
     }
 
-    pub fn vertex(&mut self, position: Vec3, color: Color, normal: Vec3) -> u32 {
+    pub fn vertex(&mut self, position: glm::Vec3, color: Color, normal: glm::Vec3) -> u32 {
         let id = self.vertices;
         self.vertices += 1;
         self.vertex_buffer.push(position.x);
@@ -34,8 +34,8 @@ impl Graphics {
         id
     }
         
-    pub fn triangle(&mut self, p0: Vec3, p1: Vec3, p2: Vec3, color: Color) {
-        let normal: Vec3 = (p1 - p0).cross(p2 - p0).unit();
+    pub fn triangle(&mut self, p0: glm::Vec3, p1: glm::Vec3, p2: glm::Vec3, color: Color) {
+        let normal = glm::normalize(&(p1 - p0).cross(&(p2 - p0)));
         let i0 = self.vertex(p0, color, normal);
         let i1 = self.vertex(p1, color, normal);
         let i2 = self.vertex(p2, color, normal);
@@ -45,8 +45,8 @@ impl Graphics {
         self.index_buffer.push(i2);
     }
 
-    pub fn quad(&mut self, p0: Vec3, p1: Vec3, p2: Vec3, p3: Vec3, color: Color) {
-        let normal: Vec3 = (p1 - p0).cross(p2 - p0).unit();
+    pub fn quad(&mut self, p0: glm::Vec3, p1: glm::Vec3, p2: glm::Vec3, p3: glm::Vec3, color: Color) {
+        let normal = glm::normalize(&(p1 - p0).cross(&(p2 - p0)));
         let i0 = self.vertex(p0, color, normal);
         let i1 = self.vertex(p1, color, normal);
         let i2 = self.vertex(p2, color, normal);
@@ -67,10 +67,10 @@ impl Graphics {
         while x < x_max {
             let mut z = z_min;
             while z < z_max {
-                let p00 = Vec3::new(x, f(x, z), z);
-                let p01 = Vec3::new(x, f(x, z + z_step), z + z_step);
-                let p10 = Vec3::new(x + x_step, f(x + x_step, z), z);
-                let p11 = Vec3::new(x + x_step, f(x + x_step, z + z_step), z + z_step);
+                let p00 = glm::Vec3::new(x, f(x, z), z);
+                let p01 = glm::Vec3::new(x, f(x, z + z_step), z + z_step);
+                let p10 = glm::Vec3::new(x + x_step, f(x + x_step, z), z);
+                let p11 = glm::Vec3::new(x + x_step, f(x + x_step, z + z_step), z + z_step);
 
                 self.triangle(p00, p01, p11, color);
                 self.triangle(p11, p10, p00, color);

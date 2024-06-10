@@ -6,11 +6,11 @@ pub mod math;
 use std::{f32::consts::TAU, ffi::CString};
 
 use gl::types;
-use graphics::{camera::Camera, graphics::Graphics, mat3::Mat3, objects::*, vec3::Vec3, winsdl::*};
+use graphics::{camera::Camera, graphics::Graphics, objects::*, winsdl::*};
 use sdl2::{event::Event, keyboard::Keycode};
 
 fn f(x: f32, z: f32) -> f32 {
-    (x * x + z * z).sqrt().cos()
+    0.5 * (x * x + z * z).sqrt()
 }
 
 fn main() -> Result<(), String> {
@@ -34,7 +34,7 @@ fn main() -> Result<(), String> {
     ibo.bind();
 
     let scale = TAU * 2.0;
-    let steps = 200.0;
+    let steps = 10.0;
 
     let mut graphics: Graphics = Graphics::new();
     graphics.surface(-scale, scale, scale / steps, -scale, scale, scale / steps, f);
@@ -62,7 +62,7 @@ fn main() -> Result<(), String> {
                     }
                 }
                 Event::MouseWheel { y, .. } => {
-                    camera.distance = (camera.distance * 0.9f32.powf(y as f32)).clamp(0.2, 25.0);
+                    camera.distance = (camera.distance * 0.9f32.powf(y as f32)).clamp(0.2, 100.0);
                 }
                 Event::MouseMotion { mousestate, xrel, yrel, .. } => {
                     if mousestate.left() {
@@ -84,8 +84,8 @@ fn main() -> Result<(), String> {
         ibo.set(&graphics.index_buffer);
 
         unsafe {
-            gl::Enable(gl::CULL_FACE);
-            gl::CullFace(gl::BACK);
+            // gl::Enable(gl::CULL_FACE);
+            // gl::CullFace(gl::BACK);
 
             gl::Enable(gl::DEPTH_TEST);
             gl::DepthFunc(gl::LESS);
@@ -93,7 +93,7 @@ fn main() -> Result<(), String> {
             gl::ClearColor(0.1, 0.1, 0.1, 1.0);
             gl::Clear(gl::COLOR_BUFFER_BIT | gl::DEPTH_BUFFER_BIT);
 
-            gl::DepthMask(gl::FALSE);
+            gl::DepthMask(gl::TRUE);
 
             gl::DrawElements(gl::TRIANGLES, graphics.vertices as types::GLsizei, gl::UNSIGNED_INT, 0 as *const _);
         }
