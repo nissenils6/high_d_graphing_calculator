@@ -8,3 +8,4 @@ gl = "*"
 sdl2 = "*"
 enum-ordinalize = "*"
 nalgebra-glm = "*"
+rusttype = { version = "0.9.3", features = ["gpu_cache"] }

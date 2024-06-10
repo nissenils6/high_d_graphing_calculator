@@ -1,9 +1,5 @@
 #version 330 core
 
-// VertexBuffer: [(position: vec3, color: vec3, normal: vec3), ...]
-// IndexBuffer: [i32, i32, i32, ...]
-// Uniforms: Resolution: vec2, Camera Position: vec3, Camera Orientation: mat3, Lighting: vec3
-
 layout (location = 0) in vec3 a_position;
 layout (location = 1) in vec3 a_color;
 layout (location = 2) in vec3 a_normal;
