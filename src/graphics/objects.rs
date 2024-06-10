@@ -366,7 +366,7 @@ impl Uniform {
         }
     }
 
-    pub fn set_vec3(&self, vec: Vec3) {
+    pub fn set_vec3(&self, vec: glm::Vec3) {
         self.set3(vec.x, vec.y, vec.z);
     }
 
@@ -374,33 +374,9 @@ impl Uniform {
         self.set3(color.r, color.g, color.b);
     }
 
-    pub fn set_mat3(&self, mat: Mat3) {
+    pub fn set_mat4(&self, mat: glm::Mat4) {
         unsafe {
-            gl::UniformMatrix3fv(self.id, 1, 0, &mat as *const Mat3 as *const types::GLfloat);
+            gl::UniformMatrix4fv(self.id, 1, 0, mat.as_ptr() as *const types::GLfloat);
         }
     }
-
-    // pub fn set_f32(&self, f: f32) {
-    //     unsafe {
-    //         gl::Uniform1f(self.id, f);
-    //     }
-    // }
-
-    // pub fn set_vec2f(&self, v: Vec2f) {
-    //     unsafe {
-    //         gl::Uniform2f(self.id, v.x, v.y);
-    //     }
-    // }
-
-    // pub fn set_rgb(&self, c: Color) {
-    //     unsafe {
-    //         gl::Uniform3f(self.id, c.r, c.g, c.b);
-    //     }
-    // }
-
-    // pub fn set_rgba(&self, c: Color) {
-    //     unsafe {
-    //         gl::Uniform4f(self.id, c.r, c.g, c.b, c.a);
-    //     }
-    // }
 }
