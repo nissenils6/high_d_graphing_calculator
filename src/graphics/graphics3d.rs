@@ -106,7 +106,7 @@ impl Graphics3D {
     }
 
     pub fn surface(&mut self, x_min: f32, x_max: f32, x_step: f32, z_min: f32, z_max: f32, z_step: f32, f: fn(f32, f32) -> f32) {
-        let color = Color::from_rgb(0.5, 0.5, 0.5);
+        let color = Color::from_rgb(0.4, 0.0, 0.6);
 
         let mut x = x_min;
         while x < x_max {

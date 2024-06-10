@@ -4,3 +4,4 @@ pub mod color;
 pub mod graphics3d;
 pub mod graphicstext;
 pub mod camera;
+pub mod fontatlas;
